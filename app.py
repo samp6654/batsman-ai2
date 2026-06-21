@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import os
 from model import analyze_video
 
-print("🚀 Flask starting...")
+print("Flask starting...")
 
 app = Flask(__name__)
 
@@ -30,13 +30,14 @@ def login():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     file = request.files["video"]
-    shot = request.form.get("shot")
+    shot = request.form.get("shot", "Unknown")
 
     filepath = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(filepath)
 
-    result = analyze_video(filepath)
+    result = analyze_video(filepath, shot=shot)
     result["shot"] = shot
+    result["filename"] = file.filename
 
     return jsonify(result)
 
@@ -45,4 +46,5 @@ def history():
     return jsonify([])
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

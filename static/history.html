@@ -262,11 +262,86 @@
         }
         .btn-back:hover { color: var(--text); border-color: var(--text-2); }
 
+        /* ── PROFILE CARD ── */
+        .profile-card {
+            background: linear-gradient(135deg, #242946 0%, #2c3358 60%, #1f2440 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(232,54,93,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .profile-left { display: flex; align-items: center; gap: 16px; }
+        .profile-avatar {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800;
+            color: #fff; flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(232,54,93,0.25);
+        }
+        .profile-info .profile-name {
+            font-family: 'Sora', sans-serif; font-size: 0.98rem; font-weight: 700;
+        }
+        .profile-info .profile-email {
+            font-size: 0.78rem; color: var(--text-2); margin-top: 2px;
+        }
+        .profile-info .profile-since {
+            font-size: 0.72rem; color: var(--text-3); margin-top: 4px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .profile-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .profile-stat {
+            text-align: center;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .profile-stat .ps-value {
+            font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 800;
+        }
+        .profile-stat .ps-label {
+            font-size: 0.68rem; color: var(--text-2); margin-top: 2px;
+        }
+        .btn-logout {
+            padding: 7px 14px; border-radius: 8px;
+            border: 1px solid rgba(239,68,68,0.35);
+            background: rgba(239,68,68,0.1);
+            color: #f87171; font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-logout:hover { background: rgba(239,68,68,0.2); border-color: #f87171; }
+
+        .history-header-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px; flex-wrap: wrap; gap: 10px;
+        }
+
         @media (max-width: 600px) {
             .stat-grid { grid-template-columns: repeat(2,1fr); }
             .filters { grid-template-columns: 1fr 1fr; }
             .session-stats { grid-template-columns: repeat(2,1fr); }
             .detail-grid { grid-template-columns: 1fr 1fr; }
+            .profile-card { flex-direction: column; align-items: flex-start; }
+            .profile-right { width: 100%; justify-content: flex-start; }
         }
     </style>
 </head>
@@ -274,10 +349,18 @@
 
 <nav>
     <a class="nav-brand" href="#">🏏 Batsman Risk Analysis</a>
-    <a class="btn-new" href="upload.html">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Analysis
-    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+        <a class="btn-new" href="video-upload.html">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Analysis
+        </a>
+        <div id="navAvatar" onclick="window.location.href='profile.html'" title="My Profile"
+            style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;
+                   display:flex;align-items:center;justify-content:center;
+                   font-family:'Sora',sans-serif;font-size:0.78rem;font-weight:800;
+                   cursor:pointer;flex-shrink:0;transition:opacity .15s"
+            onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">U</div>
+    </div>
 </nav>
 
 <div class="page">
@@ -305,7 +388,7 @@
                     </div>
                 </div>
             </div>
-            <a class="btn-new" href="upload.html">Analyze Another</a>
+            <a class="btn-new" href="video-upload.html">Analyze Another</a>
         </div>
 
         <div class="detail-grid" id="rpt-details"></div>
@@ -318,8 +401,17 @@
 
     <!-- ══ HISTORY VIEW ══ -->
     <div id="historyView">
-        <div class="page-title">Analysis History</div>
-        <div class="page-sub">Track your progress and review high-risk assessments</div>
+
+        <div class="history-header-row">
+            <div>
+                <div class="page-title">Analysis History</div>
+                <div class="page-sub">Track your progress and review high-risk assessments</div>
+            </div>
+            <a class="btn-back" href="video-upload.html">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                New Analysis
+            </a>
+        </div>
 
         <!-- Stat cards -->
         <div class="stat-grid">
@@ -367,6 +459,11 @@
                         <option>Cut Shot</option>
                         <option>Hook Shot</option>
                         <option>Sweep Shot</option>
+                        <option>Slog Shot</option>
+                        <option>Flick Shot</option>
+                        <option>Scoop Shot</option>
+                        <option>Pick Up Shot</option>
+                        <option>Lofted Straight Drive</option>
                     </select>
                 </div>
             </div>
@@ -411,17 +508,17 @@
 </div>
 
 <script>
-// ── MOCK DATA ──
-const SESSIONS = [
-    { id:1, name:"batting_session_1.mp4", date:"Nov 01, 2024", time:"11:24", shot:"Cover Drive", risk:"High",  score:82, knee:82, back:75, shoulder:38, head:38, active:true },
-    { id:2, name:"batting_session_2.mp4", date:"Nov 01, 2024", time:"10:14", shot:"Pull Shot",   risk:"Medium",score:56, knee:88, back:53, shoulder:77, head:86 },
-    { id:3, name:"batting_session_3.mp4", date:"Nov 01, 2024", time:"09:55", shot:"Straight Drive",risk:"Low",score:30, knee:46, back:44, shoulder:8,  head:86 },
-    { id:4, name:"batting_session_4.mp4", date:"Nov 01, 2024", time:"09:12", shot:"Cover Drive", risk:"Medium",score:61, knee:69, back:44, shoulder:9,  head:9 },
-    { id:5, name:"batting_session_5.mp4", date:"Nov 01, 2024", time:"08:55", shot:"Pull Shot",   risk:"Low",   score:28, knee:67, back:38, shoulder:44, head:12 },
-    { id:6, name:"batting_session_6.mp4", date:"Oct 31, 2024", time:"17:30", shot:"Cut Shot",    risk:"Low",   score:18, knee:46, back:4,  shoulder:30, head:86 },
-    { id:7, name:"batting_session_7.mp4", date:"Oct 31, 2024", time:"16:44", shot:"Hook Shot",   risk:"Medium",score:54, knee:72, back:31, shoulder:60, head:22 },
-    { id:8, name:"batting_session_8.mp4", date:"Oct 30, 2024", time:"14:20", shot:"Sweep Shot",  risk:"Low",   score:22, knee:35, back:18, shoulder:12, head:44 },
-];
+// ── SESSION STORAGE (localStorage-backed) ──
+const LS_KEY = 'batsmanHistory';
+
+function loadSessions() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch(e) { return []; }
+}
+function saveSessions(arr) {
+    localStorage.setItem(LS_KEY, JSON.stringify(arr));
+}
+
+let SESSIONS = loadSessions();
 
 function riskClass(r) { return r.toLowerCase(); }
 function scoreColor(v) {
@@ -459,8 +556,8 @@ function renderSessions(data) {
             </div>
             <div class="session-actions">
                 <button class="btn-action primary" onclick="viewReport(${s.id})">📋 View Report</button>
-                <button class="btn-action ghost">⬇ Download</button>
-                <button class="btn-action ghost">🗑 Delete</button>
+                <button class="btn-action ghost" onclick="downloadReport(${s.id})">⬇ Download</button>
+                <button class="btn-action ghost" onclick="deleteSession(${s.id})">🗑 Delete</button>
             </div>
         </div>
     `).join('');
@@ -549,31 +646,99 @@ function showHistory() {
     document.getElementById('historyView').style.display = 'block';
 }
 
+// ── DOWNLOAD REPORT ──
+function downloadReport(id) {
+    const s = SESSIONS.find(x => x.id === id);
+    if (!s) return;
+    const win = window.open('', '_blank', 'width=800,height=600');
+    win.document.write(`
+<!DOCTYPE html><html><head><title>Report – ${s.name}</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 32px; color: #111; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .meta { font-size: 0.85rem; color: #555; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #1a1e35; color: #fff; padding: 10px 14px; text-align: left; font-size: 0.85rem; }
+  td { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; font-size: 0.85rem; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-weight:700; font-size:0.8rem;
+    background:${s.risk==='High'?'#fee2e2':s.risk==='Medium'?'#fef3c7':'#dcfce7'};
+    color:${s.risk==='High'?'#dc2626':s.risk==='Medium'?'#d97706':'#16a34a'}; }
+  .footer { margin-top: 32px; font-size: 0.78rem; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+  @media print { body { padding: 16px; } }
+</style></head><body>
+<h1>🏏 Batsman Risk Analysis Report</h1>
+<div class="meta">Filename: <b>${s.name}</b> &nbsp;|&nbsp; Date: <b>${s.date} ${s.time}</b> &nbsp;|&nbsp; Shot: <b>${s.shot}</b></div>
+<table>
+  <tr><th>Metric</th><th>Value</th></tr>
+  <tr><td>Overall Risk Level</td><td><span class="badge">${s.risk} Risk</span></td></tr>
+  <tr><td>Overall Risk Score</td><td><b>${s.score}%</b></td></tr>
+  <tr><td>Knee Risk</td><td>${s.knee}%</td></tr>
+  <tr><td>Back Risk</td><td>${s.back}%</td></tr>
+  <tr><td>Shoulder Risk</td><td>${s.shoulder}%</td></tr>
+  <tr><td>Head Risk</td><td>${s.head}%</td></tr>
+</table>
+<div class="footer">Generated by Batsman Risk Analysis AI &nbsp;·&nbsp; ${new Date().toLocaleString()}</div>
+</body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); }, 400);
+}
+
+// ── DELETE SESSION ──
+function deleteSession(id) {
+    if (!confirm('Delete this analysis session?')) return;
+    SESSIONS = SESSIONS.filter(x => x.id !== id);
+    saveSessions(SESSIONS);
+    updateStats();
+    renderSessions(SESSIONS);
+}
+
 // ── INIT ──
-// Check if redirected from upload page with live data
+// Pick up new analysis redirected from report page
 const reportData = sessionStorage.getItem('reportData');
 if (reportData) {
     try {
         const d = JSON.parse(reportData);
-        // Inject into SESSIONS as latest
-        SESSIONS.unshift({
-            id: 0, name: 'latest_analysis.mp4',
+        const newId = Date.now();
+        const newSession = {
+            id: newId,
+            name: d.filename || 'analysis_' + newId + '.mp4',
             date: new Date().toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}),
             time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
             shot: d.shot || 'Unknown',
             risk: d.risk_level || 'Medium',
-            score: d.risk_score || 0,
-            knee: d.knee_risk || 0, back: d.back_risk || 0,
-            shoulder: d.shoulder_risk || 0, head: d.head_risk || 0,
+            score: Math.round((d.risk_score || 0) * 10),
+            knee: Math.round(d.knee_risk || d.areas?.knee_hip?.avg || 0),
+            back: Math.round(d.back_risk || d.areas?.lower_back?.avg || 0),
+            shoulder: Math.round(d.shoulder_risk || d.areas?.shoulder?.avg || 0),
+            head: Math.round(d.head_risk || d.areas?.wrist_elbow?.avg || 0),
             active: true
-        });
+        };
+        SESSIONS.unshift(newSession);
+        saveSessions(SESSIONS);
         sessionStorage.removeItem('reportData');
-    } catch(e) {}
+    } catch(e) { console.warn('Could not parse reportData', e); }
 }
 
 updateStats();
 renderSessions(SESSIONS);
 renderChart();
+
+// ── NAV AVATAR INITIALS ──
+function initNavAvatar() {
+    const email = sessionStorage.getItem('userEmail') || '';
+    const sinceKey = 'batsmanMemberSince_' + email;
+    if (!localStorage.getItem(sinceKey)) {
+        localStorage.setItem(sinceKey, new Date().toLocaleDateString('en-US', {month:'short', year:'numeric'}));
+    }
+    const namePart = email ? email.split('@')[0] : 'U';
+    const initials = namePart.slice(0, 2).toUpperCase() || 'U';
+    const av = document.getElementById('navAvatar');
+    if (av) av.textContent = initials;
+}
+
+initNavAvatar();
 </script>
 </body>
 </html>

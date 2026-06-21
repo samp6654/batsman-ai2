@@ -1,339 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Biomechanical Analysis Report</title>
+  <title>Biomechanical Analysis Report – Batsman AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a1f4e;
+      --accent: #f97316;
+      --accent2: #ea580c;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --surface: #fff;
+      --bg: #f3f4f8;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --radius: 16px;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #1a1a2e;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding: 2rem 1rem;
-      color: #1a1a1a;
-    }
-    .report-wrap {
-      max-width: 780px;
-      margin: 0 auto;
     }
 
-    /* Header */
-    .header {
-      background: linear-gradient(90deg, #e55a2b 0%, #f0a500 100%);
-      border-radius: 14px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .header h1 { color: #fff; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-    .header-meta { display: flex; gap: 16px; flex-wrap: wrap; }
-    .header-meta span {
-      color: rgba(255,255,255,0.88);
-      font-size: 12px;
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 58px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(255,255,255,0.15);
-      padding: 3px 10px;
-      border-radius: 20px;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; font-size: 1rem; text-decoration: none; }
+    .nav-brand .icon { background: var(--accent); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .nav-actions { display: flex; gap: 10px; }
+    .btn-nav {
+      padding: 7px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08); color: #fff; font-family: inherit;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .15s;
+    }
+    .btn-nav:hover { background: rgba(255,255,255,0.18); }
+    .btn-nav.primary { background: var(--accent); border-color: var(--accent); }
+    .btn-nav.primary:hover { background: var(--accent2); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      background: linear-gradient(120deg, var(--navy) 0%, #2d3580 55%, #b45309 100%);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-left h1 { color: #fff; font-size: 1.35rem; font-weight: 800; margin-bottom: 10px; }
+    .hero-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .badge {
+      background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.92);
+      font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+    }
+    /* Risk pill on hero */
+    .risk-pill {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.12); border-radius: 14px;
+      padding: 18px 28px; min-width: 140px; text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    .risk-pill .score { font-size: 3rem; font-weight: 800; color: #fff; line-height: 1; }
+    .risk-pill .score-label { font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .risk-pill .level-badge {
+      margin-top: 8px; padding: 4px 14px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;
     }
 
-    /* Video panels */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    /* ── VIDEO ROW ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .video-card {
-      background: #f5f5f7;
-      border: 1px solid #e0e0e0;
-      border-radius: 14px;
-      padding: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
     }
-    .video-card .label { font-size: 11px; color: #666; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-    .video-placeholder {
-      background: #1e1e2e;
-      border-radius: 10px;
-      height: 130px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .video-placeholder .sub-text { color: rgba(255,255,255,0.4); font-size: 11px; text-align: center; padding: 0 12px; }
-    .play-icon {
-      width: 32px; height: 32px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 50%;
+    .v-label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .v-placeholder {
+      background: #1e1e2e; border-radius: 10px; height: 140px;
       display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px; color: rgba(255,255,255,0.45); font-size: 0.82rem;
     }
-    .play-icon::after {
-      content: '';
-      width: 0; height: 0;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      border-left: 13px solid rgba(255,255,255,0.55);
-      margin-left: 3px;
+    .v-placeholder video { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; }
+    .play-ring {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
     }
-    .badge-processing {
-      background: #f0a500; color: #fff;
-      font-size: 10px; font-weight: 600;
-      padding: 2px 10px; border-radius: 20px;
-      display: inline-block; margin-bottom: 6px;
+    .play-ring::after {
+      content: ''; width: 0; height: 0;
+      border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+      border-left: 13px solid rgba(255,255,255,0.6); margin-left: 3px;
     }
 
-    /* Risk score */
-    .risk-card {
-      background: #fff;
-      border: 1px solid #e8e8e8;
-      border-radius: 14px;
-      padding: 1.75rem;
-      text-align: center;
-      margin-bottom: 1rem;
+    /* ── CARD BASE ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
     }
-    .risk-circle {
-      width: 76px; height: 76px;
-      border-radius: 50%;
-      background: #f0a500;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      margin: 0 auto 1rem;
-      box-shadow: 0 4px 16px rgba(240,165,0,0.35);
+    .section-title {
+      font-size: 0.85rem; font-weight: 700; color: var(--navy);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 16px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
-    .risk-circle .score { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
-    .risk-circle .score-label { font-size: 9px; color: rgba(255,255,255,0.85); margin-top: 2px; }
-    .risk-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
-    .risk-desc { font-size: 12px; color: #666; max-width: 480px; margin: 0 auto; line-height: 1.7; }
 
-    /* Analysis grid */
-    .analysis-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
-    .analysis-card {
-      background: #fff;
-      border: 1px solid #e8e8e8;
-      border-radius: 14px;
-      padding: 0.85rem;
+    /* ── ANALYSIS GRID ── */
+    .analysis-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+    .area-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
     }
-    .card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-    .card-icon { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-    .card-title { font-size: 11px; font-weight: 600; color: #1a1a1a; }
-    .metric-row { margin-bottom: 8px; }
-    .metric-label { font-size: 10px; color: #888; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center; }
-    .status { font-size: 9px; font-weight: 700; }
-    .status.good { color: #3B6D11; }
-    .status.warn { color: #854F0B; }
-    .status.high { color: #A32D2D; }
-    .bar-track { background: #eee; border-radius: 3px; height: 5px; }
-    .bar-fill { height: 5px; border-radius: 3px; }
-    .bar-fill.green { background: #63991f; }
-    .bar-fill.amber { background: #ef9f27; }
-    .bar-fill.red { background: #e24b4a; }
-    .bar-fill.blue { background: #378add; }
+    .area-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .area-icon {
+      width: 26px; height: 26px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+    }
+    .area-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+    .metric { margin-bottom: 10px; }
+    .metric-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .metric-name { font-size: 0.7rem; color: var(--muted); }
+    .metric-status { font-size: 0.65rem; font-weight: 700; }
+    .s-low    { color: var(--green); }
+    .s-mod    { color: var(--amber); }
+    .s-high   { color: var(--red); }
+    .bar-track { background: #f0f0f0; border-radius: 4px; height: 5px; }
+    .bar-fill  { height: 5px; border-radius: 4px; transition: width .6s ease; }
+    .fill-green { background: var(--green); }
+    .fill-amber { background: var(--amber); }
+    .fill-red   { background: var(--red); }
+    .fill-blue  { background: var(--blue); }
 
-    /* Recommendations */
-    .recommendations {
-      background: #fffdf5;
-      border: 1px solid #e8e8e8;
-      border-radius: 14px;
-      padding: 1.25rem;
+    /* ── ANGLE SUMMARY ── */
+    .angle-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .angle-chip {
+      flex: 1; min-width: 120px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; text-align: center;
     }
-    .rec-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; border-bottom: 1px solid #f0e8d0; padding-bottom: 0.75rem; }
-    .rec-header span { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-    .rec-item { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f0ece0; }
-    .rec-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-    .rec-item-title { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
-    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .dot.red { background: #e24b4a; }
-    .dot.amber { background: #ef9f27; }
-    .dot.blue { background: #378add; }
-    .dot.green { background: #63991f; }
-    .rec-item-title strong { font-size: 12px; font-weight: 600; color: #1a1a1a; }
-    .rec-meta { font-size: 11px; color: #c0392b; margin-bottom: 4px; margin-left: 16px; font-weight: 600; }
-    .rec-body { font-size: 11px; color: #555; line-height: 1.7; margin-left: 16px; }
+    .angle-val { font-size: 1.5rem; font-weight: 800; color: var(--navy); }
+    .angle-unit { font-size: 0.7rem; color: var(--muted); }
+    .angle-name { font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-top: 4px; }
+
+    /* ── RECOMMENDATIONS ── */
+    .rec-section { margin-bottom: 0; }
+    .rec-item {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp .4s ease both;
+    }
+    .rec-item:last-child { border-bottom: none; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .rec-item:nth-child(1) { animation-delay: .05s; }
+    .rec-item:nth-child(2) { animation-delay: .10s; }
+    .rec-item:nth-child(3) { animation-delay: .15s; }
+    .rec-item:nth-child(4) { animation-delay: .20s; }
+    .rec-item:nth-child(5) { animation-delay: .25s; }
+    .rec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .rec-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot-red   { background: var(--red); }
+    .dot-amber { background: var(--amber); }
+    .dot-blue  { background: var(--blue); }
+    .dot-green { background: var(--green); }
+    .rec-head strong { font-size: 0.88rem; font-weight: 700; }
+    .rec-issue { font-size: 0.78rem; color: var(--red); font-weight: 600; margin-bottom: 6px; padding-left: 19px; }
+    .rec-body { font-size: 0.8rem; color: #555; line-height: 1.7; padding-left: 19px; }
     .rec-body b { font-weight: 600; color: #333; }
 
-    @media (max-width: 580px) {
+    /* ── BACK BUTTON ── */
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.85); font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; text-decoration: none;
+      font-family: 'Inter', sans-serif; margin-bottom: 18px;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.18); color: #fff; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
       .two-col { grid-template-columns: 1fr; }
-      .analysis-grid { grid-template-columns: repeat(2, 1fr); }
+      .analysis-grid { grid-template-columns: repeat(2,1fr); }
+      .hero { flex-direction: column; }
+      .angle-chip { min-width: 90px; }
     }
-    @media (max-width: 360px) {
-      .analysis-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 360px) { .analysis-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-<div class="report-wrap">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>Biomechanical Analysis Report</h1>
-    <div class="header-meta">
-      <span>📅 March 31, 2026</span>
-      <span>🏏 Batting assessment</span>
-      <span>✅ Test specified</span>
+<nav>
+  <a class="nav-brand" href="video-upload.html">
+    <div class="icon">🏏</div>
+    Batsman Risk Analysis
+  </a>
+  <div class="nav-actions">
+    <button class="btn-nav" onclick="window.location.href='history.html'">📋 History</button>
+    <button class="btn-nav primary" onclick="window.location.href='video-upload.html'">+ New Analysis</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- BACK BUTTON -->
+  <a class="btn-back" href="history.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    ← Back to History
+  </a>
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-left">
+      <h1>Biomechanical Analysis Report</h1>
+      <div class="hero-meta">
+        <span class="badge" id="badgeDate">📅 —</span>
+        <span class="badge" id="badgeShot">🏏 —</span>
+        <span class="badge" id="badgeFrames">🎞 — frames</span>
+        <span class="badge" id="badgeModel">🤖 —</span>
+      </div>
+    </div>
+    <div class="risk-pill">
+      <div class="score" id="heroScore">—</div>
+      <div class="score-label">Risk Score / 10</div>
+      <div class="level-badge" id="heroLevel">—</div>
     </div>
   </div>
 
-  <!-- Video panels -->
+  <!-- VIDEO ROW -->
   <div class="two-col">
     <div class="video-card">
-      <div class="label">📹 Original video</div>
-      <div class="video-placeholder">
-        <div class="play-icon"></div>
-        <div class="sub-text">Original batting video will appear here</div>
+      <div class="v-label">📹 Original Video</div>
+      <div class="v-placeholder" id="origVideo">
+        <div class="play-ring"></div>
+        <span>Original batting video</span>
       </div>
     </div>
     <div class="video-card">
-      <div class="badge-processing">Processing done</div>
-      <div class="label">🤸 Pose analysis (MediaPipe + OpenPose)</div>
-      <div class="video-placeholder">
-        <div class="play-icon"></div>
-        <div class="sub-text">3D skeletal mapping with joint angles<br>Real-time biomechanical insight</div>
+      <div class="v-label">🤸 Pose Analysis (MediaPipe)</div>
+      <div class="v-placeholder">
+        <div class="play-ring"></div>
+        <span>Skeletal overlay · Joint angle mapping</span>
       </div>
     </div>
   </div>
 
-  <!-- Risk score -->
-  <div class="risk-card">
-    <div class="risk-circle">
-      <div class="score">45</div>
-      <div class="score-label">Risk score</div>
+  <!-- ANGLE CHIPS -->
+  <div class="angle-row">
+    <div class="angle-chip">
+      <div class="angle-val" id="valShoulder">—</div>
+      <div class="angle-unit">deg</div>
+      <div class="angle-name">Shoulder Angle</div>
     </div>
-    <div class="risk-title">Moderate Risk Detected</div>
-    <div class="risk-desc">
-      Your batting technique shows some biomechanical concerns that may lead to injury over time.
-      Please review the detailed joint analysis and personalized recommendations below to improve
-      your technique and minimize injury risk.
+    <div class="angle-chip">
+      <div class="angle-val" id="valHip">—</div>
+      <div class="angle-unit">deg</div>
+      <div class="angle-name">Hip Angle</div>
+    </div>
+    <div class="angle-chip">
+      <div class="angle-val" id="valBack">—</div>
+      <div class="angle-unit">deg</div>
+      <div class="angle-name">Back Rotation</div>
+    </div>
+    <div class="angle-chip">
+      <div class="angle-val" id="valFrames">—</div>
+      <div class="angle-unit">frames</div>
+      <div class="angle-name">Analyzed Frames</div>
     </div>
   </div>
 
-  <!-- Joint analysis cards -->
-  <div class="analysis-grid">
-
-    <div class="analysis-card">
-      <div class="card-header">
-        <div class="card-icon" style="background:#FAECE7;">🦴</div>
-        <div class="card-title">Lower back analysis</div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Flexion angle</span><span class="status warn">Moderate</span></div>
-        <div class="bar-track"><div class="bar-fill amber" style="width:58%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Lateral flexion</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:30%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Extension pivot</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:22%;"></div></div>
-      </div>
-    </div>
-
-    <div class="analysis-card">
-      <div class="card-header">
-        <div class="card-icon" style="background:#FAEEDA;">🤾</div>
-        <div class="card-title">Shoulder mechanics</div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Abduction angle</span><span class="status warn">Moderate</span></div>
-        <div class="bar-track"><div class="bar-fill amber" style="width:55%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Internal rotation</span><span class="status warn">Moderate</span></div>
-        <div class="bar-track"><div class="bar-fill amber" style="width:62%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Follow through</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:28%;"></div></div>
-      </div>
-    </div>
-
-    <div class="analysis-card">
-      <div class="card-header">
-        <div class="card-icon" style="background:#E1F5EE;">🦵</div>
-        <div class="card-title">Knee & hip joints</div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Front knee flexion</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:32%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Back knee stability</span><span class="status warn">Moderate</span></div>
-        <div class="bar-track"><div class="bar-fill amber" style="width:52%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Hip alignment</span><span class="status warn">Moderate</span></div>
-        <div class="bar-track"><div class="bar-fill amber" style="width:48%;"></div></div>
-      </div>
-    </div>
-
-    <div class="analysis-card">
-      <div class="card-header">
-        <div class="card-icon" style="background:#E6F1FB;">🤜</div>
-        <div class="card-title">Wrists & elbows</div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Wrist angle</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:26%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Elbow extension</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:33%;"></div></div>
-      </div>
-      <div class="metric-row">
-        <div class="metric-label"><span>Grip pressure</span><span class="status good">Low</span></div>
-        <div class="bar-track"><div class="bar-fill green" style="width:20%;"></div></div>
-      </div>
-    </div>
-
+  <!-- BODY AREA CARDS -->
+  <div class="analysis-grid" id="analysisGrid">
+    <!-- Injected by JS -->
   </div>
 
-  <!-- Recommendations -->
-  <div class="recommendations">
-    <div class="rec-header">
-      <span>📋 Personalized Improvement Recommendations</span>
-    </div>
-
-    <div class="rec-item">
-      <div class="rec-item-title"><div class="dot red"></div><strong>Lower back focus — critical attention required</strong></div>
-      <div class="rec-meta">Issue: Your lower back flexion assessment is 58% (moderate), significantly increasing the risk of lumbar strain.</div>
-      <div class="rec-body">
-        <b>Action:</b> Focus on maintaining a more upright posture during shot selection. Work with your coach to adjust your stance, with a 3-step movement to hip flexion and practice maintaining neutral spine positioning during the swing. Target flexion reduction to 30% or below within 6 weeks.
-      </div>
-    </div>
-
-    <div class="rec-item">
-      <div class="rec-item-title"><div class="dot amber"></div><strong>Core strengthening protocol</strong></div>
-      <div class="rec-body">
-        <b>Why:</b> Strong core muscles provide spinal support and reduce compensatory movements that strain the lower back.<br>
-        <b>Exercise plan:</b> Planks 1 min × 3 sets daily · Dead bugs 2 × 12 reps · Bird dogs 3 × 10 reps · Anti-rotation press 2 sets × 15 before batting practice each session.
-      </div>
-    </div>
-
-    <div class="rec-item">
-      <div class="rec-item-title"><div class="dot blue"></div><strong>Flexibility & mobility work</strong></div>
-      <div class="rec-body">
-        <b>Focus areas:</b> Hip flexors, hamstrings, and thoracic spine mobility are notably missing from back compensation.<br>
-        <b>Routine:</b> Stretch duration 2–3 min per muscle group · Thoracic rotation 10 reps each side · Cat-cow stretches 2 × 10 reps per day. Perform this routine daily, both before and after practice.
-      </div>
-    </div>
-
-    <div class="rec-item">
-      <div class="rec-item-title"><div class="dot green"></div><strong>Technical adjustments for cover drive</strong></div>
-      <div class="rec-body">
-        <b>Stance modification:</b> Widen your base by 3 inches to improve weight distribution. Keep 60% weight on back foot during initial bat pickup.<br>
-        <b>Head position:</b> Keep your head central and still during the swing. Lean into the shot with controlled forward foot movement.<br>
-        <b>Front foot movement:</b> Step to the pitch of the ball to maintain weight transfer. Practice with a cone or tee to ensure correct foot pattern.<br>
-        <b>Practice drill:</b> Use a throwdown machine, pause on each delivery to correct your head and foot position. You should receive immediate feedback throughout the day.
-      </div>
-    </div>
-
-    <div class="rec-item">
-      <div class="rec-item-title"><div class="dot blue"></div><strong>Progress tracking</strong></div>
-      <div class="rec-body">
-        <b>Re-assessment schedule:</b> Analyze your batting technique every 3 weeks to track improvements in joint angles and risk score.<br>
-        <b>Target:</b> With consistent work on these recommendations, you should see measurable improvement within 6–8 weeks. (Currently: 45 → Target: 25 or lower)
-      </div>
-    </div>
-
+  <!-- RECOMMENDATIONS -->
+  <div class="card rec-section">
+    <div class="section-title">📋 Personalized Improvement Recommendations</div>
+    <div id="recList"><!-- Injected by JS --></div>
   </div>
 
 </div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────
+const raw = sessionStorage.getItem("reportData");
+const data = raw ? JSON.parse(raw) : {
+  risk_score: 5.2,
+  risk_level: "Medium",
+  shot: "Cover Drive",
+  frame_count: 120,
+  avg_shoulder_angle: 65,
+  avg_hip_angle: 135,
+  avg_back_rotation: 32,
+  areas: {
+    shoulder:    { avg: 55, status: "Moderate" },
+    lower_back:  { avg: 62, status: "High" },
+    knee_hip:    { avg: 40, status: "Moderate" },
+    wrist_elbow: { avg: 22, status: "Low" },
+  }
+};
+
+// ─── Risk styling ────────────────────────────────────────
+const LEVEL_STYLE = {
+  "Very Low": { color:"#16a34a", bg:"rgba(22,163,74,0.18)", label:"Very Low Risk" },
+  "Low":      { color:"#65a30d", bg:"rgba(101,163,13,0.18)", label:"Low Risk" },
+  "Medium":   { color:"#d97706", bg:"rgba(217,119,6,0.20)",  label:"Moderate Risk" },
+  "High":     { color:"#dc2626", bg:"rgba(220,38,38,0.18)",  label:"High Risk" },
+  "Very High":{ color:"#9b1c1c", bg:"rgba(155,28,28,0.22)",  label:"Very High Risk" },
+  "Unknown":  { color:"#6b7280", bg:"rgba(107,114,128,0.15)",label:"Unknown" },
+};
+
+// ─── Populate hero ───────────────────────────────────────
+const level = data.risk_level || "Unknown";
+const ls = LEVEL_STYLE[level] || LEVEL_STYLE["Unknown"];
+
+document.getElementById("heroScore").textContent = (data.risk_score ?? "—");
+const levelEl = document.getElementById("heroLevel");
+levelEl.textContent = ls.label;
+levelEl.style.background = ls.bg;
+levelEl.style.color = ls.color;
+
+const today = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+document.getElementById("badgeDate").textContent   = "📅 " + today;
+document.getElementById("badgeShot").textContent   = "🏏 " + (data.shot || "Batting");
+document.getElementById("badgeFrames").textContent = "🎞 " + (data.frame_count ?? 0) + " frames";
+
+// Model badge
+const modelBadge = document.getElementById("badgeModel");
+if (data.model_used === "xgboost") {
+  modelBadge.textContent = "⚡ Biomechanical Engine";
+  modelBadge.style.background = "rgba(37,99,235,0.25)";
+  modelBadge.style.color = "rgba(147,197,253,0.95)";
+} else {
+  modelBadge.textContent = "📐 Posture Engine";
+  modelBadge.style.background = "rgba(217,119,6,0.20)";
+}
+
+// Angle chips
+document.getElementById("valShoulder").textContent = data.avg_shoulder_angle != null ? Math.abs(data.avg_shoulder_angle).toFixed(1) : "—";
+document.getElementById("valHip").textContent      = data.avg_hip_angle      != null ? Math.abs(data.avg_hip_angle).toFixed(1)      : "—";
+document.getElementById("valBack").textContent     = data.avg_back_rotation  != null ? Math.abs(data.avg_back_rotation).toFixed(1)  : "—";
+document.getElementById("valFrames").textContent   = data.frame_count ?? "—";
+
+// ─── Area cards ─────────────────────────────────────────
+const AREA_META = {
+  shoulder:    { icon:"🤾", bg:"#FAEEDA", name:"Shoulder Mechanics",
+    metrics:[
+      { name:"Abduction angle",   key:"avg", scale:1 },
+      { name:"Internal rotation", key:"avg", scale:0.8 },
+      { name:"Follow-through",    key:"avg", scale:0.5 },
+    ]},
+  lower_back:  { icon:"🦴", bg:"#FAECE7", name:"Lower Back",
+    metrics:[
+      { name:"Flexion angle",     key:"avg", scale:1 },
+      { name:"Lateral flexion",   key:"avg", scale:0.6 },
+      { name:"Extension pivot",   key:"avg", scale:0.4 },
+    ]},
+  knee_hip:    { icon:"🦵", bg:"#E1F5EE", name:"Knee & Hip",
+    metrics:[
+      { name:"Front knee flexion",key:"avg", scale:0.9 },
+      { name:"Back knee stability",key:"avg", scale:0.8 },
+      { name:"Hip alignment",     key:"avg", scale:1 },
+    ]},
+  wrist_elbow: { icon:"🤜", bg:"#E6F1FB", name:"Wrists & Elbows",
+    metrics:[
+      { name:"Wrist angle",       key:"avg", scale:0.6 },
+      { name:"Elbow extension",   key:"avg", scale:1 },
+      { name:"Grip pressure",     key:"avg", scale:0.5 },
+    ]},
+};
+
+function statusColor(s) {
+  if (s === "Low")      return { cls:"s-low",  fill:"fill-green" };
+  if (s === "Moderate") return { cls:"s-mod",  fill:"fill-amber" };
+  return                       { cls:"s-high", fill:"fill-red"   };
+}
+
+const grid = document.getElementById("analysisGrid");
+for (const [key, meta] of Object.entries(AREA_META)) {
+  const area = (data.areas || {})[key] || { avg: 30, status: "Low" };
+  const sc = statusColor(area.status);
+  const html = `
+    <div class="area-card">
+      <div class="area-header">
+        <div class="area-icon" style="background:${meta.bg}">${meta.icon}</div>
+        <div class="area-name">${meta.name}</div>
+      </div>
+      ${meta.metrics.map((m,i) => {
+        const val = Math.round(area.avg * (i===0?1: m.scale));
+        const capped = Math.min(val, 100);
+        const st = val < 30 ? {cls:"s-low",fill:"fill-green"} : val < 55 ? {cls:"s-mod",fill:"fill-amber"} : {cls:"s-high",fill:"fill-red"};
+        const label = val < 30 ? "Low" : val < 55 ? "Moderate" : "High";
+        return `<div class="metric">
+          <div class="metric-top">
+            <span class="metric-name">${m.name}</span>
+            <span class="metric-status ${st.cls}">${label}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill ${st.fill}" style="width:${capped}%"></div></div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  grid.insertAdjacentHTML("beforeend", html);
+}
+
+// ─── Recommendations engine ──────────────────────────────
+const areas = data.areas || {};
+const recs = [];
+
+function areaRec(key) {
+  const a = areas[key] || {};
+  return { avg: a.avg || 0, status: a.status || "Low" };
+}
+
+// Lower back
+const lb = areaRec("lower_back");
+if (lb.status === "High") {
+  recs.push({ dot:"dot-red", title:"Lower Back — Critical Attention Required",
+    issue:`Your lower back risk is ${lb.avg.toFixed(0)}% — significantly above the safe threshold.`,
+    body:`<b>Action:</b> Maintain a more upright posture during shot selection. Work with your coach to adjust stance
+    and practice neutral-spine positioning throughout the swing.
+    <b>Target:</b> Reduce flexion risk below 30% within 6 weeks using progressive mobility drills.` });
+} else if (lb.status === "Moderate") {
+  recs.push({ dot:"dot-amber", title:"Lower Back — Monitor Flexion",
+    issue:`Lower back flexion risk is ${lb.avg.toFixed(0)}% (moderate zone).`,
+    body:`<b>Drill:</b> Cat-cow stretches 2×10 daily · Thoracic rotation 10 reps/side · Hip hinge practice with
+    coach feedback. Aim to reduce compensatory movements during back-foot shots.` });
+}
+
+// Shoulder
+const sh = areaRec("shoulder");
+if (sh.status === "High") {
+  recs.push({ dot:"dot-red", title:"Shoulder Mechanics — Immediate Correction Needed",
+    issue:`Shoulder abduction risk is ${sh.avg.toFixed(0)}% — high injury zone.`,
+    body:`<b>Action:</b> Reduce over-rotation on follow-through. Focus on elbow tucking drills.
+    <b>Strengthening:</b> Rotator-cuff band exercises 3×15 daily. Target 55°–70° abduction during drive shots.` });
+} else if (sh.status === "Moderate") {
+  recs.push({ dot:"dot-amber", title:"Shoulder Mechanics — Improvement Recommended",
+    issue:`Shoulder score is ${sh.avg.toFixed(0)}% — moderate load detected.`,
+    body:`<b>Routine:</b> Shoulder pendulum warm-up before practice · Sleeper stretches 30 s each side.
+    Internal rotation is a primary contributor — focus on follow-through control.` });
+}
+
+// Knee/Hip
+const kh = areaRec("knee_hip");
+if (kh.status !== "Low") {
+  recs.push({ dot: kh.status==="High"?"dot-red":"dot-amber",
+    title:"Knee & Hip Alignment — Stability Work",
+    issue:`Knee/hip risk is ${kh.avg.toFixed(0)}%.`,
+    body:`<b>Exercises:</b> Single-leg squats 3×10 · Glute bridges 2×15 · Lateral band walks 20 steps/side.
+    During batting, ensure front knee does not collapse inward on the drive. Widen base by 2–3 inches.` });
+}
+
+// Core
+if (lb.status !== "Low" || kh.status !== "Low") {
+  recs.push({ dot:"dot-blue", title:"Core Strengthening Protocol",
+    issue:null,
+    body:`<b>Why:</b> A strong core protects the lumbar spine and improves rotational efficiency.
+    <b>Plan:</b> Planks 1 min×3 · Dead bugs 2×12 · Bird dogs 3×10 · Anti-rotation press 2×15 — before each practice.` });
+}
+
+// Technical shot tip
+recs.push({ dot:"dot-green", title:`Technical Tip — ${data.shot || "Shot"} Correction`,
+  issue:null,
+  body:`<b>Stance:</b> Keep 60% weight on back foot at bat pick-up.
+  <b>Head position:</b> Eyes level, minimal lateral movement.
+  <b>Foot movement:</b> Step fully to the pitch of the ball.
+  <b>Drill:</b> Slow-motion shadow practice in front of a mirror, pausing at impact position to check all joint angles.` });
+
+// Progress
+recs.push({ dot:"dot-blue", title:"Progress Tracking",
+  issue:null,
+  body:`<b>Re-assess every 3 weeks</b> to track improvement in joint angles and overall risk score.
+  <b>Current score:</b> ${data.risk_score}/10 — Target: ${Math.max(0, parseFloat(data.risk_score)-2).toFixed(1)} or lower within 8 weeks with consistent training.` });
+
+// Render recs
+const recList = document.getElementById("recList");
+recs.forEach((r, i) => {
+  recList.insertAdjacentHTML("beforeend", `
+    <div class="rec-item" style="animation-delay:${i*0.05}s">
+      <div class="rec-head">
+        <div class="rec-dot ${r.dot}"></div>
+        <strong>${r.title}</strong>
+      </div>
+      ${r.issue ? `<div class="rec-issue">⚠ ${r.issue}</div>` : ""}
+      <div class="rec-body">${r.body}</div>
+    </div>`);
+});
+</script>
 </body>
 </html>

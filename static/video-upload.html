@@ -443,14 +443,14 @@
         <span>🏏</span> Batsman Risk Analysis
     </a>
     <div class="nav-right">
-        <button class="btn-history" onclick="history.back()">
+        <button class="btn-history" onclick="window.location.href='history.html'">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                 <path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
             </svg>
             History
         </button>
-        <div class="avatar" title="User">U</div>
+        <div class="avatar" id="navAvatar" title="My Profile" onclick="window.location.href='profile.html'" style="cursor:pointer">U</div>
     </div>
 </nav>
 
@@ -472,6 +472,11 @@
                     <option value="Cut Shot">Cut Shot</option>
                     <option value="Hook Shot">Hook Shot</option>
                     <option value="Sweep Shot">Sweep Shot</option>
+                    <option value="Slog Shot">Slog Shot</option>
+                    <option value="Flick Shot">Flick Shot</option>
+                    <option value="Scoop Shot">Scoop Shot</option>
+                    <option value="Pick Up Shot">Pick Up Shot</option>
+                    <option value="Lofted Straight Drive">Lofted Straight Drive</option>
                 </select>
             </div>
         </div>
@@ -555,6 +560,17 @@
 </main>
 
 <script>
+    // Auth guard
+    if (!sessionStorage.getItem("isLoggedIn")) window.location.href = "login.html";
+
+    // Set nav avatar initials
+    (function() {
+        const email = sessionStorage.getItem('userEmail') || '';
+        const namePart = email ? email.split('@')[0] : 'U';
+        const initials = namePart.slice(0, 2).toUpperCase() || 'U';
+        const av = document.getElementById('navAvatar');
+        if (av) av.textContent = initials;
+    })();
     const BACKEND = "http://127.0.0.1:5000";
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("videoFile");

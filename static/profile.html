@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile – Batsman Risk Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a1f4e;
+      --accent: #e8365d;
+      --accent2: #ff6b35;
+      --blue: #4d7cfe;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --bg: #f3f4f8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; font-size: 1rem; text-decoration: none; }
+    .nav-brand .icon { background: var(--accent); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .btn-back-nav {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-back-nav:hover { background: rgba(255,255,255,0.18); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 760px; margin: 0 auto; padding: 36px 20px 80px; }
+
+    /* ── HERO PROFILE ── */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #2d3580 55%, #9b2335 100%);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .profile-hero::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,54,93,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .profile-hero::after {
+      content: '';
+      position: absolute; bottom: -40px; left: -20px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(77,124,254,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+    .avatar-ring {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(232,54,93,0.3), 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .avatar-online {
+      position: absolute; bottom: 4px; right: 4px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--green);
+      border: 2.5px solid var(--navy);
+    }
+
+    .hero-info { flex: 1; min-width: 0; }
+    .hero-name {
+      font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800;
+      color: #fff; margin-bottom: 4px;
+    }
+    .hero-email { font-size: 0.88rem; color: rgba(255,255,255,0.65); margin-bottom: 12px; }
+    .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .hero-badge {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700;
+      background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255,255,255,0.18);
+      letter-spacing: 0.3px;
+    }
+    .hero-badge.active { background: rgba(34,197,94,0.25); color: #4ade80; border-color: rgba(34,197,94,0.4); }
+
+    /* ── STAT ROW ── */
+    .stat-row {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 16px;
+      text-align: center; transition: transform .15s, box-shadow .15s;
+    }
+    .stat-box:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .stat-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .stat-val { font-family: 'Sora', sans-serif; font-size: 1.7rem; font-weight: 800; line-height: 1; }
+    .stat-val.green { color: var(--green); }
+    .stat-val.red   { color: var(--red); }
+    .stat-val.blue  { color: var(--blue); }
+    .stat-val.yellow{ color: var(--yellow); }
+    .stat-lbl { font-size: 0.73rem; color: var(--muted); margin-top: 5px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700;
+      color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── INFO ROWS ── */
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.82rem; color: var(--muted); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .info-val { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+    /* ── RECENT SESSIONS ── */
+    .session-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+    .session-row:last-child { border-bottom: none; }
+    .session-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .session-name { font-size: 0.84rem; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-date { font-size: 0.74rem; color: var(--muted); flex-shrink: 0; }
+    .risk-chip {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.68rem; font-weight: 700; flex-shrink: 0;
+    }
+    .risk-chip.High   { background: rgba(239,68,68,0.1);  color: #dc2626; border: 1px solid rgba(239,68,68,0.25); }
+    .risk-chip.Medium { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.25); }
+    .risk-chip.Low    { background: rgba(34,197,94,0.1);  color: #16a34a; border: 1px solid rgba(34,197,94,0.25); }
+
+    .empty-msg { text-align: center; padding: 24px; color: var(--muted); font-size: 0.85rem; }
+
+    /* ── DANGER ZONE ── */
+    .danger-zone { border-color: rgba(239,68,68,0.3); }
+    .btn-danger {
+      padding: 10px 22px; border-radius: 10px;
+      border: 1.5px solid rgba(239,68,68,0.4);
+      background: rgba(239,68,68,0.06);
+      color: #dc2626; font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.14); border-color: #dc2626; }
+
+    /* ── ACTION BUTTONS ── */
+    .action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 10px 22px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, var(--navy), #2d3580);
+      color: #fff; font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      transition: all .15s; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-outline {
+      padding: 10px 22px; border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--muted);
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .15s; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+
+    @media (max-width: 600px) {
+      .stat-row { grid-template-columns: repeat(2,1fr); }
+      .profile-hero { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="video-upload.html">
+    <div class="icon">🏏</div>
+    Batsman Risk Analysis
+  </a>
+  <a class="btn-back-nav" href="javascript:history.back()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </a>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar-ring" id="heroAvatar">?</div>
+      <div class="avatar-online"></div>
+    </div>
+    <div class="hero-info">
+      <div class="hero-name" id="heroName">Cricketer</div>
+      <div class="hero-email" id="heroEmail">—</div>
+      <div class="hero-badges">
+        <span class="hero-badge active">● Active</span>
+        <span class="hero-badge" id="memberBadge">🗓 Member since —</span>
+        <span class="hero-badge" id="sessionBadge">📊 0 Sessions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-icon">📊</div>
+      <div class="stat-val blue" id="stTotal">0</div>
+      <div class="stat-lbl">Total Sessions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-val red" id="stHigh">0</div>
+      <div class="stat-lbl">High Risk</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val green" id="stLow">0</div>
+      <div class="stat-lbl">Low Risk</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-val yellow" id="stBest">—</div>
+      <div class="stat-lbl">Best Score</div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT INFO -->
+  <div class="card">
+    <div class="card-title">👤 Account Information</div>
+    <div class="info-row">
+      <span class="info-label">📧 Email</span>
+      <span class="info-val" id="infoEmail">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">👤 Display Name</span>
+      <span class="info-val" id="infoName">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">🗓 Member Since</span>
+      <span class="info-val" id="infoSince">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">🔐 Account Type</span>
+      <span class="info-val">Standard User</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">🟢 Status</span>
+      <span class="info-val" style="color:var(--green)">Active</span>
+    </div>
+  </div>
+
+  <!-- RECENT SESSIONS -->
+  <div class="card">
+    <div class="card-title">🏏 Recent Sessions</div>
+    <div id="recentList"><div class="empty-msg">No sessions yet. Upload a video to get started.</div></div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <div class="card-title">⚡ Quick Actions</div>
+    <div class="action-row">
+      <a class="btn-primary" href="video-upload.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Analysis
+      </a>
+      <a class="btn-outline" href="history.html">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        View History
+      </a>
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="card danger-zone">
+    <div class="card-title" style="color:#dc2626">⚠️ Danger Zone</div>
+    <div class="info-row">
+      <div>
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:3px">Clear All History</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Permanently delete all your analysis sessions</div>
+      </div>
+      <button class="btn-danger" onclick="clearHistory()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        Clear All
+      </button>
+    </div>
+    <div class="info-row" style="border-bottom:none">
+      <div>
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:3px">Logout</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Sign out of your account</div>
+      </div>
+      <button class="btn-danger" onclick="handleLogout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Auth guard
+if (!sessionStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
+
+const LS_KEY = 'batsmanHistory';
+const email = sessionStorage.getItem('userEmail') || '';
+const sinceKey = 'batsmanMemberSince_' + email;
+
+// Store member-since on first ever visit
+if (!localStorage.getItem(sinceKey)) {
+  localStorage.setItem(sinceKey, new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}));
+}
+
+// Derive display name
+const namePart = email ? email.split('@')[0] : 'Cricketer';
+const displayName = namePart.charAt(0).toUpperCase() + namePart.slice(1).replace(/[._-]/g, ' ');
+const initials = namePart.slice(0, 2).toUpperCase() || '?';
+const since = localStorage.getItem(sinceKey) || 'Today';
+
+// Sessions
+let sessions = [];
+try { sessions = JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch(e) {}
+
+// ── POPULATE HERO ──
+document.getElementById('heroAvatar').textContent = initials;
+document.getElementById('heroName').textContent   = displayName;
+document.getElementById('heroEmail').textContent  = email || '—';
+document.getElementById('memberBadge').textContent = '🗓 Member since ' + since;
+document.getElementById('sessionBadge').textContent = '📊 ' + sessions.length + ' Session' + (sessions.length !== 1 ? 's' : '');
+
+// ── ACCOUNT INFO ──
+document.getElementById('infoEmail').textContent = email || '—';
+document.getElementById('infoName').textContent  = displayName;
+document.getElementById('infoSince').textContent = since;
+
+// ── STATS ──
+const scores = sessions.map(s => s.score || 0);
+document.getElementById('stTotal').textContent = sessions.length;
+document.getElementById('stHigh').textContent  = sessions.filter(s => s.risk === 'High').length;
+document.getElementById('stLow').textContent   = sessions.filter(s => s.risk === 'Low').length;
+document.getElementById('stBest').textContent  = scores.length ? Math.min(...scores) + '%' : '—';
+
+// ── RECENT SESSIONS (last 5) ──
+const riskDot = { High: '#ef4444', Medium: '#f59e0b', Low: '#22c55e' };
+const recent = sessions.slice(0, 5);
+const recList = document.getElementById('recentList');
+if (recent.length) {
+  recList.innerHTML = recent.map(s => `
+    <div class="session-row">
+      <div class="session-dot" style="background:${riskDot[s.risk] || '#9ca3af'}"></div>
+      <div class="session-name">${s.name || 'Analysis'}</div>
+      <div class="session-date">${s.date || ''}</div>
+      <span class="risk-chip ${s.risk}">${s.risk || '—'}</span>
+    </div>`).join('');
+} else {
+  recList.innerHTML = '<div class="empty-msg">No sessions yet. Upload a video to get started.</div>';
+}
+
+// ── ACTIONS ──
+function clearHistory() {
+  if (!confirm('Delete ALL analysis sessions? This cannot be undone.')) return;
+  localStorage.removeItem(LS_KEY);
+  window.location.reload();
+}
+
+function handleLogout() {
+  if (!confirm('Log out of Batsman AI?')) return;
+  sessionStorage.removeItem('isLoggedIn');
+  sessionStorage.removeItem('userEmail');
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>
