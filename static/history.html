@@ -497,8 +497,8 @@
             <div class="sessions-header">
                 <div class="sessions-title">Recent Analyses</div>
                 <div class="header-actions">
-                    <button class="btn-sm danger">🗑 Clear</button>
-                    <button class="btn-sm outline">⬇ Export</button>
+                    <button class="btn-sm danger" onclick="clearAll()">🗑 Clear</button>
+                    <button class="btn-sm outline" onclick="exportAll()">⬇ Export</button>
                 </div>
             </div>
             <div id="sessionsList"></div>
@@ -693,6 +693,50 @@ function deleteSession(id) {
     saveSessions(SESSIONS);
     updateStats();
     renderSessions(SESSIONS);
+}
+
+// ── CLEAR ALL SESSIONS ──
+function clearAll() {
+    if (!SESSIONS.length) { alert('No sessions to clear.'); return; }
+    if (!confirm('Are you sure you want to delete ALL analysis sessions? This cannot be undone.')) return;
+    SESSIONS = [];
+    saveSessions(SESSIONS);
+    updateStats();
+    renderSessions(SESSIONS);
+    // Reset chart
+    const canvas = document.getElementById('trendChart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// ── EXPORT ALL SESSIONS AS CSV ──
+function exportAll() {
+    if (!SESSIONS.length) { alert('No sessions to export.'); return; }
+
+    const headers = ['Session Name','Date','Time','Shot Type','Risk Level','Risk Score (%)','Knee Risk (%)','Back Risk (%)','Shoulder Risk (%)','Head Risk (%)'];
+    const rows = SESSIONS.map(s => [
+        `"${s.name}"`,
+        `"${s.date}"`,
+        `"${s.time}"`,
+        `"${s.shot}"`,
+        `"${s.risk}"`,
+        s.score,
+        s.knee,
+        s.back,
+        s.shoulder,
+        s.head
+    ].join(','));
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = `batsman_analysis_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 // ── INIT ──
