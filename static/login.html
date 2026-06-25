@@ -494,7 +494,7 @@
   </div>
 
   <script>
-    const BACKEND = "";  // same origin
+    const BACKEND = "";  // same-origin: Flask serves both HTML and API
 
     function showToast(msg, type = 'error') {
       const t = document.getElementById('toast');
@@ -534,6 +534,7 @@
       try {
         const res  = await fetch(`${BACKEND}/login`, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
         });

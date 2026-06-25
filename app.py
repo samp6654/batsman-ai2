@@ -7,6 +7,7 @@ from flask_login import (
     login_user, logout_user, login_required, current_user
 )
 from authlib.integrations.flask_client import OAuth
+from flask_cors import CORS
 import os
 from model import analyze_video
 from database import (
@@ -19,6 +20,21 @@ print("Flask starting...")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "batsman-ai-secret-2024-xK9pQ")
+
+# ── CORS: allow the Render frontend to talk to this backend ──────────────────
+ALLOWED_ORIGINS = [
+    "https://batsman-ai2-1.onrender.com",
+    "https://bat-3.onrender.com",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]
+CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
+
+# ── Session cookie settings for HTTPS (Render) ───────────────────────────────
+is_production = os.environ.get("RENDER", False)  # Render sets RENDER=true
+app.config["SESSION_COOKIE_SECURE"]   = bool(is_production)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "None" if is_production else "Lax"
 
 # ── Flask-Login ──────────────────────────────────────────────────────────────
 login_manager = LoginManager(app)

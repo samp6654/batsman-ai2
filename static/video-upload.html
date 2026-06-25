@@ -571,7 +571,7 @@
         const av = document.getElementById('navAvatar');
         if (av) av.textContent = initials;
     })();
-    const BACKEND = "";  // same origin
+    const BACKEND = "";  // same-origin: Flask serves both HTML and API
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("videoFile");
     const fileBanner = document.getElementById("fileBanner");
@@ -648,6 +648,7 @@
         try {
             const res = await fetch(`${BACKEND}/analyze`, {
                 method: "POST",
+                credentials: "include",
                 body: formData
             });
             const data = await res.json();

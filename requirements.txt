@@ -10,3 +10,4 @@ joblib
 flask-login
 authlib
 requests
+flask-cors
